@@ -19,34 +19,14 @@ calculate_standart_value <- function(df_column_data, column_name) {
   calculated_value
 }
 
-get_df_by_selectors <- function(dataframe, row_selector, column_selector) {
-  row_selector_exists <- !(missing(row_selector))
-  column_selector_exists <- !(missing(column_selector))
-  print(paste0('Row selecor exists: ', row_selector_exists))
-  print(paste0('Column selecor exists: ', column_selector_exists))
-  new_dataframe <- NULL
-  if (row_selector_exists && column_selector_exists) { 
-    new_dataframe = dataframe[row_selector, column_selector]  
-  } else if ( !(row_selector_exists || column_selector_exists) ) {
-    new_dataframe = dataframe
-  } else if (row_selector_exists){
-    new_dataframe = dataframe[row_selector, ]
-  } else {
-    new_dataframe = dataframe[, column_selector]
-  }
-  new_dataframe
-}
-
 explore_df <- function(dataframe, row_selector, column_selector) {
-  new_dataframe <- get_df_by_selectors(dataframe, row_selector, column_selector)
-
+  new_dataframe <- dataframe[row_selector, column_selector]
   calculated_values <- list()
   for(column in names(new_dataframe)) {
     calculated_values[[column]] <- calculate_standart_value(new_dataframe[[column]], column)
   }
   list(calculated_values, new_dataframe)
 }
-
 
 
 
