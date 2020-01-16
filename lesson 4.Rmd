@@ -1,0 +1,78 @@
+---
+title: "Task 04. Clean the dataset weather.rds"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r include=FALSE}
+library(tidyr)
+```
+
+
+## Чтение данных:
+```{r}
+path_to_file = 'C:\\Users\\Karina.Kuchaeva\\Documents\\PersonalProjects\\r_programming\\weather.rds'
+weather <- readRDS(path_to_file)
+```
+
+```{r}
+head(weather, 5)
+```
+
+## Колонки X1-X31 в одну колонку "День":
+```{r}
+df_with_days_columns <- gather(weather, day, value_for_day, X1:X31)
+```
+
+## Измерения по разным колонкам:
+```{r}
+df_right_structure <- spread(df_with_days_columns, key = measure, value = value_for_day)
+head(df_right_structure, 5)
+```
+
+## Преобразование значений в столбцах
+Измерения и CloudCover: в числа
+Events: замена пустых строчек на NA
+Формирование столбца Date
+```{r}
+df_right_structure['CloudCover'] <- lapply(df_right_structure['CloudCover'], FUN = function(x) as.numeric(x))
+df_right_structure$Events[df_right_structure$Events==''] <- NA
+df_right_structure[7:26] <- lapply(df_right_structure[7:26], FUN = function(x) as.numeric(x))
+
+df_right_structure['day'] <- gsub('\\D', '', df_right_structure[['day']])
+df_right_structure['day'] <- lapply(df_right_structure['day'], FUN = function(x) as.numeric(x))
+df_right_structure <- unite(df_right_structure, Date, year, month, day, sep = '-')
+df_right_structure['Date'] <- lapply(df_right_structure['Date'], FUN = function(x) as.Date(x))
+df_right_structure <- df_right_structure[2:24]
+```
+
+## Полученная структуре
+```{r}
+summary(df_right_structure)
+head(df_right_structure, 5)
+```
+
+## Схлопывание данных за один день
+```{r}
+splitted_data <- split(df_right_structure, df_right_structure$Date)
+new_df <- df_right_structure[0, ]
+for (date_group in splitted_data) {
+  curr_row = nrow(new_df) + 1
+  suppressWarnings(new_df[curr_row,  ] <- lapply(date_group, max, na.rm = T))
+}
+is.na(new_df) <- sapply(new_df, is.infinite)
+```
+
+## Удаление строк, в которых все значения NA
+```{r}
+ind <- apply(new_df[2:23], 1, function(x) all(is.na(x)))
+new_df_without_na <- new_df[ !ind, ]
+```
+
+## Итого
+```{r}
+summary(new_df)
+head(new_df, 5)
+```
