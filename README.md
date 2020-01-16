@@ -17,3 +17,17 @@ Write a function that:
 * Treat numeric data as matrices
 * Add formal argument to split the data
 * Add calculation function as a formal argument to your function
+
+#### Домашнее задание №4
+Привести к tidy-виду dataset
+
+#### Домашнее задание №5
+Использовать %>% в hometask3
+
+#### Домашнее задание №6
+Визуализация с помощью ggplot
+
+#### Домашнее задание №7
+Shiny Application
+
+
